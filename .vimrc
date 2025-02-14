@@ -58,32 +58,39 @@ set encoding=UTF-8			" set Encoding Method
 
 " Word Highlighting
 augroup word_highlight
-	autocmd VimEnter * hi WordHL guibg=gray30 ctermbg=darkgray ctermfg=black " auto enable
-	autocmd CursorMoved * exe printf('match WordHL /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+    autocmd VimEnter * hi WordHL guibg=gray30 ctermbg=darkgray ctermfg=black " auto enable
+    autocmd CursorMoved * exe printf('match WordHL /\V\<%s\>/', escape(expand('<cword>'), '/\'))
 augroup END
 
-"function! WordHighlightEnable()
-"	augroup word_highlight
-"		highlight WordHL guibg=gray30 ctermbg=darkgray ctermfg=black
-"		autocmd CursorMoved * exe printf('match WordHL /\V\<%s\>/', escape(expand('<cword>'), '/\'))
-"	augroup END
-"endfunction
-"
-"function! WordHighlightDisable()
-"	augroup! word_highlight
-"endfunction
 
 if has("gui_running")							" GUI Setting
-	set background=dark
-	colo hybrid
-	autocmd GUIEnter * set guioptions=aegit    "
-	autocmd GUIEnter * set lines=55 columns=115	" VIM size
-"	autocmd GUIEnter * winpos 1000 250			" Default GUI Coordinates
-	autocmd GUIEnter * highlight IndentHighlight guibg=gray9
-	autocmd GUIEnter * 2match IndentHighlight /^\(    \)\+/
+    set background=dark
+    colo hybrid
+    autocmd GUIEnter * set guioptions=aegit    "
+    autocmd GUIEnter * set lines=55 columns=115	" VIM size
+"    autocmd GUIEnter * winpos 1000 250			" Default GUI Coordinates
+    autocmd GUIEnter * highlight IndentHighlight guibg=gray9
+    autocmd GUIEnter * 2match IndentHighlight /^\(    \)\+/
+    autocmd WinEnter * highlight IndentHighlight guibg=gray9
+    autocmd WinEnter * 2match IndentHighlight /^\(    \)\+/
 else
-	colo desert
+    colo desert
 endif
+
+autocmd BufReadPost *.[ch]   let b:commentCommand='I// '   "Comment for C files
+autocmd BufReadPost *.[ch]   let b:unCommentCommand='^xxx' "un-Comment for C files
+autocmd BufReadPost *.cpp    let b:commentCommand='I// '   "Comment for C files
+autocmd BufReadPost *.cpp    let b:unCommentCommand='^xx ' "un-Comment for C files
+autocmd BufReadPost *.py     let b:commentCommand='I# '    "Comment for perl files
+autocmd BufReadPost *.py     let b:unCommentCommand='^xx'  "un-Comment for perl
+autocmd BufReadPost *.vim*   let b:commentCommand='I" '    "Comment for perl files
+autocmd BufReadPost *.vim*   let b:unCommentCommand='^xx'  "un-Comment for perl
+
+noremap <expr> <C-m> (synIDattr(synID(line("."), col("."), 0), "name") =~ 'comment\c') ?
+\ ':<S-Left>exe "<S-Right>normal! ".b:unCommentCommand<CR>' :
+\ ':<S-Left>exe "<S-Right>normal! ".b:commentCommand<CR>'
+
+
 
 
 " Set Fonts - must be installed in ~/.fonts
@@ -98,25 +105,6 @@ autocmd InsertEnter * set cursorline
 autocmd InsertLeave * set nocursorline
 
 
-"augroup select_runner
-"	autocmd BufEnter *.java   nmap <C-CR> :!java %<CR>
-"	autocmd BufEnter *.py     nmap <C-CR> :!py %<CR>
-"	autocmd BufEnter *.c      nmap <C-CR> :!cpp %<CR>
-"	autocmd BufEnter *.cpp    nmap <C-CR> :!cpp %<CR>
-"	autocmd BufEnter *.tcl*   nmap <C-CR> :!tclsh %<CR>
-"	autocmd BufEnter *.csh    nmap <C-CR> :!csh %<CR>
-"	autocmd BufEnter *.sh     nmap <C-CR> :!sh %<CR>
-"augroup END
-"	
-"augroup select_runner_with_input_file
-"	autocmd BufEnter *.java   nmap <C-A-CR> :!java % < input.txt<CR>
-"	autocmd BufEnter *.py     nmap <C-A-CR> :!py % < input.txt<CR>
-"	autocmd BufEnter *.c      nmap <C-A-CR> :!a.exe < input.txt<CR>
-"	autocmd BufEnter *.cpp    nmap <C-A-CR> :!a.exe < input.txt<CR>
-"	autocmd BufEnter *.tcl*   nmap <C-A-CR> :!tclsh % < input.txt<CR>
-"	autocmd BufEnter *.csh    nmap <C-A-CR> :!csh % < input.txt<CR>
-"	autocmd BufEnter *.sh     nmap <C-A-CR> :!sh % < input.txt<CR>
-"augroup END
 
 
 " BindKeys
@@ -159,5 +147,6 @@ cmap WQ<S-CR> wq<CR>
 
 
 if has("syntax")
-	syntax on
+    syntax on
 endif
+
